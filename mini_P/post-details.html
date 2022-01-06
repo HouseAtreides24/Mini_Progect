@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    let str = window.location.search.slice(1, window.location.search.length);
+    let postId = parseInt(str.split('_')[0])
+    let userId = parseInt(str.split('_')[1])
+    console.log("PostID = " + postId)
+    console.log("UserID = " + userId)
+
+    fetch('https://jsonplaceholder.typicode.com/posts/'+postId+'/comments')
+        .then(someResponse => someResponse.json())
+        .then(someComments => {
+            let allCommetnsDiv = document.createElement('div')
+            for (const someComment of someComments) {
+                let comentDiv = document.createElement('div')
+
+                let comentPostId =document.createElement('div');
+                let commentId = document.createElement('div')
+                let commentName = document.createElement('div');
+                let  commentEmail = document.createElement('div');
+                let commentBody =document.createElement('div');
+
+                comentPostId.innerHTML = someComment.postId;
+                commentId.innerHTML = someComment.id;
+                commentName.innerHTML = someComment.name;
+                commentEmail.innerHTML = someComment.email;
+                commentBody.innerHTML = someComment.body;
+
+                comentDiv.append(comentPostId,commentId,commentName,commentEmail,commentBody)
+                allCommetnsDiv.appendChild(comentDiv)
+            }
+            document.body.appendChild(allCommetnsDiv)
+        });
+
+    fetch('https://jsonplaceholder.typicode.com/users/'+userId+'/posts')
+        .then(someResponse => someResponse.json())
+        .then(someUsers => {
+            let ourPost = document.createElement('div');
+            for (let someUser of someUsers) {
+                if (someUser.id==postId){
+
+                    let postUserId = document.createElement('div');
+                    let postId = document.createElement('div');
+                    let postTittle = document.createElement('div');
+                    let postBody = document.createElement('div');
+
+                    postUserId.innerHTML ="userID = "+ someUser.userId;
+                    postId.innerHTML = "Id = "+someUser.id;
+                    postTittle.innerHTML ="title = "+ someUser.title;
+                    postBody.innerHTML = "body = "+ someUser.body;
+
+                    ourPost.append(postUserId,postId,postTittle,postBody);
+
+
+                }
+            }
+            document.body.appendChild(ourPost)
+
+        });
+</script>
+</body>
+</html>

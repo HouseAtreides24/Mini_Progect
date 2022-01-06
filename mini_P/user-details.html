@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    let str = window.location.search.slice(1, window.location.search.length);
+    let newPageIp = parseInt(str)
+    console.log(newPageIp)
+    // let q = parseInt(str.get("?"));
+    // console.log(q)
+    // console.log(typeof q)
+    //str.slice(1, str.length)
+    fetch('https://jsonplaceholder.typicode.com/users/'+`${newPageIp}`)
+        .then(someResponse => someResponse.json())
+        .then(someUsers => {
+            let mainDiv = document.createElement('div')
+
+            function recursion(someUsers) { // вот тут уже пошла сама функция, в ней и проблема.
+                for (let item in someUsers) {
+                    if (typeof someUsers[item] === 'object') {
+                        {
+                            recursion(someUsers[item]);
+                        }
+                    } else {
+                        let elementDiv = document.createElement('div')
+                        elementDiv.innerHTML = item + " "+someUsers[item];
+                        //console.log(item + " "+someUsers[item] );
+                        mainDiv.appendChild(elementDiv)
+                    }
+                }
+                document.body.appendChild(mainDiv)
+            }
+
+
+
+            recursion(someUsers);
+
+            let postOfCurUser = document.createElement('button')
+            postOfCurUser.innerText = 'post of current user'
+
+            let status = false;
+            postOfCurUser.onclick = ()=>{
+
+                if (!status){
+                    fetch('https://jsonplaceholder.typicode.com/users/'+newPageIp+'/posts')
+                        .then(someResponse => someResponse.json())
+                        .then(somePosts => {
+
+                            let allPost = document.createElement('div')
+                            for (let post of somePosts) {
+                                console.log(post)
+                                // "userId": 1,
+                                //     "id": 1,
+                                //     "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+                                //     "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum" +
+                                // "\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+                                let postDiv =document.createElement('div');
+                                let postuserIdDiv =document.createElement('div');
+                                let postIdDiv =document.createElement('div');
+                                let postTittleDiv =document.createElement('div');
+                                let postBodyDiv =document.createElement('div');
+                                postuserIdDiv.innerText = 'userId - ' + post.userId;
+                                postIdDiv.innerText = 'Id - ' + post.id;
+                                postTittleDiv.innerText = 'Tittle - ' + post.title;
+                                postBodyDiv.innerText = 'body - ' + post.body;
+                                let zeroDiv = document.createElement('div')
+                                zeroDiv.innerHTML = "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+                                postDiv.append(postuserIdDiv,postIdDiv,postTittleDiv,postBodyDiv,zeroDiv)
+                                //postDiv.append(postTittleDiv,zeroDiv)
+                                let detailsPostButton = document.createElement('button')
+                                detailsPostButton.innerText = 'SHOW POST DETAILS'
+                                detailsPostButton.onclick = ()=>{
+                                    document.location = 'post-details.html?'+`${post.id}`+"_"+`${newPageIp}`;
+                                }
+
+                                allPost.append(postDiv,detailsPostButton);
+                            }
+                            document.body.appendChild(allPost)
+                        });
+                    status=true;
+                }
+
+
+
+            }
+
+
+            document.body.appendChild(postOfCurUser);
+
+            // На странице user-details.html:
+            // 4 Вывести всю, без исключения, информацию про объект user на кнопку/ссылку которого был совершен клик ранее.
+            // 5 Добавить кнопку "post of current user", при клике на которую, появляются title всех постов текущего юзера
+            // (для получения постов используйте эндпоинт https://jsonplaceholder.typicode.com/users/USER_ID/posts)
+            //     6 Каждому посту добавить кнопку/ссылку, при клике на которую происходит переход на страницу post-details.html,
+            //     которая имеет детальную информацию про текущий пост.
+
+        })
+</script>
+
+</body>
+</html>
